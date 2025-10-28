@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { UsuarioStats } from '@/types/spacius';
-import { User, Calendar, Clock, Mail } from 'lucide-react';
+import { User, Calendar, Clock, Mail, RefreshCw } from 'lucide-react';
 
 // Mock data de usuarios
 const mockUsuarios: UsuarioStats[] = [
@@ -51,8 +52,43 @@ const mockUsuarios: UsuarioStats[] = [
 ];
 
 export default function UsuariosPage() {
-  const [usuarios, setUsuarios] = useState<UsuarioStats[]>(mockUsuarios);
-  const [loading, setLoading] = useState(false);
+  const [usuarios, setUsuarios] = useState<UsuarioStats[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [usingMockData, setUsingMockData] = useState(false);
+
+  // Cargar usuarios desde Firebase
+  const loadUsuarios = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetch('/api/usuarios');
+      const result = await response.json();
+      
+      if (result.success) {
+        setUsuarios(result.data);
+        setUsingMockData(false);
+      } else {
+        // Si Firebase no está configurado o hay error, usar datos mock como fallback
+        console.warn('Error cargando usuarios de Firebase:', result.error);
+        setUsuarios(mockUsuarios);
+        setUsingMockData(true);
+        setError(result.error);
+      }
+    } catch (error) {
+      console.error('Error conectando con la API:', error);
+      setUsuarios(mockUsuarios);
+      setUsingMockData(true);
+      setError('Error de conexión con el servidor');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadUsuarios();
+  }, []);
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('es-ES', {
@@ -71,11 +107,45 @@ export default function UsuariosPage() {
   };
 
   return (
-    <div className="space-y-6 p-6">
-      <Header 
-        title="Gestión de Usuarios" 
-        subtitle="Supervisa la actividad y estadísticas de los usuarios" 
-      />
+    <div className="space-y-6 p-6 bg-black min-h-screen">
+      <div className="flex justify-between items-center">
+        <Header 
+          title="Gestión de Usuarios" 
+          subtitle="Supervisa la actividad y estadísticas de los usuarios" 
+        />
+        <Button onClick={loadUsuarios} disabled={loading} variant="outline">
+          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+          {loading ? 'Cargando...' : 'Actualizar'}
+        </Button>
+      </div>
+
+      {/* Estado de la fuente de datos */}
+      {(error || usingMockData) && (
+        <Card className={`${usingMockData ? 'border-yellow-500' : 'border-red-500'}`}>
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <div className={`h-3 w-3 rounded-full ${usingMockData ? 'bg-yellow-500' : 'bg-red-500'}`}></div>
+              <div>
+                <p className={`text-sm font-medium ${usingMockData ? 'text-yellow-700' : 'text-red-700'}`}>
+                  {usingMockData ? '⚠️ Mostrando usuarios de ejemplo' : '❌ Error conectando con Firebase'}
+                </p>
+                <p className="text-xs text-gray-600">
+                  {error || 'Conecta Firebase Authentication para ver usuarios reales'}
+                </p>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={loadUsuarios}
+                disabled={loading}
+                className="ml-auto"
+              >
+                {loading ? '🔄 Cargando...' : '🔄 Reintentar'}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Estadísticas generales */}
       <div className="grid gap-4 md:grid-cols-4">
@@ -133,15 +203,39 @@ export default function UsuariosPage() {
         <CardHeader>
           <CardTitle>Usuarios Más Activos</CardTitle>
           <CardDescription>
-            Top 10 usuarios con más reservas realizadas
+            {loading 
+              ? 'Cargando usuarios...' 
+              : usingMockData 
+                ? 'Lista de ejemplo de usuarios (configura Firebase para ver datos reales)'
+                : `${usuarios.length} usuarios encontrados en Firebase Authentication`
+            }
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {usuarios
-              .sort((a, b) => b.totalReservas - a.totalReservas)
-              .slice(0, 10)
-              .map((usuario, index) => (
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <p className="text-gray-500">Cargando usuarios desde Firebase...</p>
+              </div>
+            </div>
+          ) : usuarios.length === 0 ? (
+            <div className="text-center py-12">
+              <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No hay usuarios registrados</h3>
+              <p className="text-gray-500 mb-4">
+                {usingMockData 
+                  ? 'Configura Firebase Authentication para ver usuarios reales.'
+                  : 'No se encontraron usuarios en Firebase Authentication.'
+                }
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {usuarios
+                .sort((a, b) => b.totalReservas - a.totalReservas)
+                .slice(0, 10)
+                .map((usuario, index) => (
                 <div key={usuario.id} className="flex items-center justify-between p-4 border rounded-lg">
                   <div className="flex items-center space-x-4">
                     <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
@@ -183,7 +277,8 @@ export default function UsuariosPage() {
                   </div>
                 </div>
               ))}
-          </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
