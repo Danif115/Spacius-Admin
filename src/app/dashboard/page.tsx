@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import DashboardCharts from '@/components/DashboardCharts';
+import FirebaseStatus from '@/components/FirebaseStatus';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardStats } from '@/types/spacius';
 
@@ -38,18 +39,69 @@ const mockStats: DashboardStats = {
 export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats>(mockStats);
   const [loading, setLoading] = useState(false);
+  const [usingMockData, setUsingMockData] = useState(true);
+
+  const loadDashboardData = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/dashboard');
+      const result = await response.json();
+      
+      if (result.success) {
+        setStats(result.data);
+        setUsingMockData(false);
+      } else {
+        // Si Firebase no está configurado, usar datos mock
+        setStats(mockStats);
+        setUsingMockData(true);
+      }
+    } catch (error) {
+      console.error('Error cargando datos del dashboard:', error);
+      setStats(mockStats);
+      setUsingMockData(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Aquí cargarías los datos reales de Firebase
-    // obtenerEstadisticasDashboard().then(setStats);
+    loadDashboardData();
   }, []);
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-6 bg-black min-h-screen">
       <Header 
         title="Dashboard" 
         subtitle="Resumen general de la plataforma Spacius" 
       />
+
+      {/* Estado de Firebase */}
+      <div className="grid gap-4 md:grid-cols-4">
+        <FirebaseStatus className="md:col-span-1" />
+        <div className="md:col-span-3">
+          <Card className={`${usingMockData ? 'border-yellow-200' : 'border-green-200'}`}>
+            <CardHeader className="pb-3">
+              <CardTitle className={`text-sm font-medium ${usingMockData ? 'text-yellow-700' : 'text-green-700'}`}>
+                {usingMockData ? '⚠️ Datos de Ejemplo' : '✅ Datos en Tiempo Real'}
+              </CardTitle>
+              <CardDescription className="text-xs">
+                {usingMockData 
+                  ? 'Para ver datos reales, configura las credenciales de Firebase' 
+                  : 'Mostrando estadísticas actualizadas desde Firebase'
+                }
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-xs text-gray-600">
+              <p>
+                {usingMockData 
+                  ? 'Actualmente se muestran datos de ejemplo. Una vez configurado Firebase, este dashboard mostrará estadísticas en tiempo real.'
+                  : `Última actualización: ${new Date().toLocaleTimeString('es-ES')}`
+                }
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
 
       {/* Métricas principales */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
