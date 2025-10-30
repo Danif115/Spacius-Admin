@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebase-admin';
+import { adminDb, adminAuth } from '@/lib/firebase-admin';
 import { DashboardStats } from '@/types/spacius';
 
 export async function GET(request: NextRequest) {
@@ -12,16 +12,16 @@ export async function GET(request: NextRequest) {
       }, { status: 500 });
     }
 
-    // Obtener estadísticas de las diferentes colecciones
-    const [lugaresSnapshot, reservasSnapshot, usersSnapshot] = await Promise.all([
+    // Obtener estadísticas de las diferentes fuentes
+    const [lugaresSnapshot, reservasSnapshot, authUsers] = await Promise.all([
       adminDb.collection('lugares').get(),
       adminDb.collection('reservas').get(),
-      adminDb.collection('users').get(),
+      adminAuth.listUsers(1000), // Obtener usuarios de Firebase Authentication
     ]);
 
     // Calcular estadísticas básicas
     const totalLugares = lugaresSnapshot.size;
-    const totalUsuarios = usersSnapshot.size;
+    const totalUsuarios = authUsers.users.length; // Usuarios reales de Firebase Auth
     const totalReservas = reservasSnapshot.size;
 
     // Calcular reservas activas
