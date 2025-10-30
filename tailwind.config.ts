@@ -43,6 +43,11 @@ const config: Config = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        // Colores personalizados para Spacius
+        "spacius-green": "hsl(var(--spacius-green))",
+        "spacius-green-light": "hsl(var(--spacius-green-light))",
+        "spacius-green-dark": "hsl(var(--spacius-green-dark))",
+        "spacius-accent": "hsl(var(--spacius-accent))",
       },
       borderRadius: {
         lg: "var(--radius)",

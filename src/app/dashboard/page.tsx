@@ -5,7 +5,9 @@ import Header from '@/components/Header';
 import DashboardCharts from '@/components/DashboardCharts';
 import FirebaseStatus from '@/components/FirebaseStatus';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { DashboardStats } from '@/types/spacius';
+import { RefreshCw, Users, MapPin, Calendar, TrendingUp } from 'lucide-react';
 
 // Mock data mientras configuramos Firebase
 const mockStats: DashboardStats = {
@@ -44,14 +46,19 @@ export default function DashboardPage() {
   const loadDashboardData = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/dashboard');
+      // Agregar timestamp para evitar cache
+      const response = await fetch(`/api/dashboard?t=${Date.now()}`);
       const result = await response.json();
+      
+      console.log('Dashboard API response:', result); // Debug log
       
       if (result.success) {
         setStats(result.data);
         setUsingMockData(false);
+        console.log('Datos cargados exitosamente:', result.data); // Debug log
       } else {
         // Si Firebase no está configurado, usar datos mock
+        console.warn('Usando datos mock, error:', result.error);
         setStats(mockStats);
         setUsingMockData(true);
       }
@@ -69,19 +76,30 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="space-y-6 p-6 bg-black min-h-screen">
-      <Header 
-        title="Dashboard" 
-        subtitle="Resumen general de la plataforma Spacius" 
-      />
+    <div className="space-y-8 p-6 min-h-screen bg-gradient-to-br from-background via-background to-slate-950">
+      <div className="flex justify-between items-center">
+        <Header 
+          title="Dashboard" 
+          subtitle="Resumen general de la plataforma Spacius" 
+        />
+        <Button 
+          onClick={loadDashboardData} 
+          disabled={loading} 
+          variant="outline"
+          className="flex items-center gap-2 hover:bg-spacius-green hover:text-white transition-colors"
+        >
+          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          {loading ? 'Cargando...' : 'Actualizar Datos'}
+        </Button>
+      </div>
 
       {/* Estado de Firebase */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-4">
         <FirebaseStatus className="md:col-span-1" />
         <div className="md:col-span-3">
-          <Card className={`${usingMockData ? 'border-yellow-200' : 'border-green-200'}`}>
+          <Card className={`relative overflow-hidden ${usingMockData ? 'border-l-4 border-l-yellow-500 bg-gradient-to-r from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20' : 'border-l-4 border-l-spacius-green bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20'}`}>
             <CardHeader className="pb-3">
-              <CardTitle className={`text-sm font-medium ${usingMockData ? 'text-yellow-700' : 'text-green-700'}`}>
+              <CardTitle className={`text-sm font-medium flex items-center gap-2 ${usingMockData ? 'text-yellow-700 dark:text-yellow-400' : 'text-green-700 dark:text-green-400'}`}>
                 {usingMockData ? '⚠️ Datos de Ejemplo' : '✅ Datos en Tiempo Real'}
               </CardTitle>
               <CardDescription className="text-xs">
@@ -91,120 +109,83 @@ export default function DashboardPage() {
                 }
               </CardDescription>
             </CardHeader>
-            <CardContent className="text-xs text-gray-600">
+            <CardContent className="text-xs text-muted-foreground">
               <p>
                 {usingMockData 
                   ? 'Actualmente se muestran datos de ejemplo. Una vez configurado Firebase, este dashboard mostrará estadísticas en tiempo real.'
-                  : `Última actualización: ${new Date().toLocaleTimeString('es-ES')}`
+                  : `Última actualización: ${new Date().toLocaleTimeString('es-ES')} - Usuarios: ${stats.totalUsuarios}, Lugares: ${stats.totalLugares}`
                 }
               </p>
             </CardContent>
+            <div className={`absolute top-0 right-0 w-16 h-16 ${usingMockData ? 'bg-yellow-500/10' : 'bg-spacius-green/10'} rounded-full -translate-y-8 translate-x-8`} />
           </Card>
         </div>
       </div>
 
       {/* Métricas principales */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="relative overflow-hidden border-l-4 border-l-spacius-green bg-gradient-to-br from-card to-card/50 hover:shadow-lg transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Usuarios</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              className="h-4 w-4 text-muted-foreground"
-            >
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Usuarios
+            </CardTitle>
+            <Users className="h-5 w-5 text-spacius-green" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalUsuarios}</div>
-            <p className="text-xs text-muted-foreground">
-              +12% desde el mes pasado
+            <div className="text-3xl font-bold text-foreground">{stats.totalUsuarios}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Usuarios registrados en la plataforma
             </p>
           </CardContent>
+          <div className="absolute top-0 right-0 w-20 h-20 bg-spacius-green/5 rounded-full -translate-y-10 translate-x-10" />
         </Card>
 
-        <Card>
+        <Card className="relative overflow-hidden border-l-4 border-l-spacius-green-light bg-gradient-to-br from-card to-card/50 hover:shadow-lg transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Lugares</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              className="h-4 w-4 text-muted-foreground"
-            >
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Lugares
+            </CardTitle>
+            <MapPin className="h-5 w-5 text-spacius-green-light" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalLugares}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-3xl font-bold text-foreground">{stats.totalLugares}</div>
+            <p className="text-xs text-muted-foreground mt-1">
               Espacios disponibles
             </p>
           </CardContent>
+          <div className="absolute top-0 right-0 w-20 h-20 bg-spacius-green-light/5 rounded-full -translate-y-10 translate-x-10" />
         </Card>
 
-        <Card>
+        <Card className="relative overflow-hidden border-l-4 border-l-emerald-500 bg-gradient-to-br from-card to-card/50 hover:shadow-lg transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Reservas Activas</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              className="h-4 w-4 text-muted-foreground"
-            >
-              <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
-              <line x1="16" y1="2" x2="16" y2="6" />
-              <line x1="8" y1="2" x2="8" y2="6" />
-              <line x1="3" y1="10" x2="21" y2="10" />
-            </svg>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Reservas Activas
+            </CardTitle>
+            <Calendar className="h-5 w-5 text-emerald-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.reservasActivas}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-3xl font-bold text-foreground">{stats.reservasActivas}</div>
+            <p className="text-xs text-muted-foreground mt-1">
               En curso actualmente
             </p>
           </CardContent>
+          <div className="absolute top-0 right-0 w-20 h-20 bg-emerald-500/5 rounded-full -translate-y-10 translate-x-10" />
         </Card>
 
-        <Card>
+        <Card className="relative overflow-hidden border-l-4 border-l-green-600 bg-gradient-to-br from-card to-card/50 hover:shadow-lg transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Reservas del Mes</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              className="h-4 w-4 text-muted-foreground"
-            >
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-            </svg>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Reservas del Mes
+            </CardTitle>
+            <TrendingUp className="h-5 w-5 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.reservasMes}</div>
-            <p className="text-xs text-muted-foreground">
-              +18% vs mes anterior
+            <div className="text-3xl font-bold text-foreground">{stats.reservasMes}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Total este mes
             </p>
           </CardContent>
+          <div className="absolute top-0 right-0 w-20 h-20 bg-green-600/5 rounded-full -translate-y-10 translate-x-10" />
         </Card>
       </div>
 
