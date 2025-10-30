@@ -56,13 +56,13 @@ export default function Sidebar() {
         sidebarOpen ? "block" : "hidden"
       )}>
         <div className="fixed inset-0 bg-black bg-opacity-75" onClick={() => setSidebarOpen(false)} />
-        <div className="relative flex w-full max-w-xs flex-1 flex-col bg-gray-900 dark:bg-gray-900">
+        <div className="relative flex w-full max-w-xs flex-1 flex-col bg-white border-r border-gray-200 shadow-sm">
           <div className="absolute top-0 right-0 -mr-12 pt-2">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setSidebarOpen(false)}
-              className="text-white hover:bg-gray-700"
+              className="text-gray-600 hover:bg-gray-100"
             >
               <X className="h-6 w-6" />
             </Button>
@@ -77,7 +77,7 @@ export default function Sidebar() {
           variant="ghost"
           size="icon"
           onClick={() => setSidebarOpen(true)}
-          className="m-4 text-white hover:bg-spacius-green/20"
+          className="m-4 text-gray-600 hover:bg-green-50"
         >
           <Menu className="h-6 w-6" />
         </Button>
@@ -85,7 +85,7 @@ export default function Sidebar() {
 
       {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-        <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-700 bg-gray-900 dark:bg-gray-900 px-6">
+        <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 shadow-sm">
           <SidebarContent pathname={pathname} />
         </div>
       </div>
@@ -103,8 +103,8 @@ function SidebarContent({ pathname }: { pathname: string }) {
             <Sparkles className="text-white h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-foreground">Spacius Admin</h1>
-            <p className="text-xs text-muted-foreground">Panel de Control</p>
+            <h1 className="text-xl font-bold text-gray-900">Spacius Admin</h1>
+            <p className="text-xs text-gray-600">Panel de Control</p>
           </div>
         </div>
       </div>
@@ -123,7 +123,7 @@ function SidebarContent({ pathname }: { pathname: string }) {
                         "group flex gap-x-3 rounded-xl p-3 text-sm leading-6 font-medium transition-all duration-200",
                         isActive
                           ? "bg-spacius-green text-white shadow-lg shadow-green-500/25"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                       )}
                     >
                       <item.icon
@@ -131,7 +131,7 @@ function SidebarContent({ pathname }: { pathname: string }) {
                           "h-5 w-5 shrink-0 transition-colors",
                           isActive 
                             ? "text-white" 
-                            : "text-muted-foreground group-hover:text-spacius-green"
+                            : "text-gray-500 group-hover:text-spacius-green"
                         )}
                       />
                       <span className={isActive ? 'font-semibold' : ''}>
@@ -149,12 +149,12 @@ function SidebarContent({ pathname }: { pathname: string }) {
 
           {/* Estado de conexión */}
           <li className="mt-auto">
-            <div className="rounded-xl bg-spacius-green/10 p-4 border border-spacius-green/20">
+            <div className="rounded-xl bg-green-50 p-4 border border-green-200">
               <div className="flex items-center gap-2 mb-2">
                 <div className="h-2 w-2 rounded-full bg-spacius-green animate-pulse" />
-                <span className="text-sm font-medium text-spacius-green">Firebase Conectado</span>
+                <span className="text-sm font-medium text-green-700">Firebase Conectado</span>
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-gray-600">
                 Datos en tiempo real activos
               </p>
             </div>
