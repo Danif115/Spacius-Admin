@@ -10,7 +10,8 @@ import {
   Users, 
   Settings,
   Menu,
-  X
+  X,
+  Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -76,7 +77,7 @@ export default function Sidebar() {
           variant="ghost"
           size="icon"
           onClick={() => setSidebarOpen(true)}
-          className="m-4 text-white hover:bg-gray-800"
+          className="m-4 text-white hover:bg-spacius-green/20"
         >
           <Menu className="h-6 w-6" />
         </Button>
@@ -95,18 +96,23 @@ export default function Sidebar() {
 function SidebarContent({ pathname }: { pathname: string }) {
   return (
     <>
+      {/* Logo y título con gradiente verde */}
       <div className="flex h-16 shrink-0 items-center">
         <div className="flex items-center space-x-3">
-          <div className="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">S</span>
+          <div className="h-10 w-10 bg-spacius-gradient rounded-xl flex items-center justify-center shadow-lg shadow-green-500/25">
+            <Sparkles className="text-white h-6 w-6" />
           </div>
-          <h1 className="text-xl font-bold text-white">Spacius Admin</h1>
+          <div>
+            <h1 className="text-xl font-bold text-foreground">Spacius Admin</h1>
+            <p className="text-xs text-muted-foreground">Panel de Control</p>
+          </div>
         </div>
       </div>
+
       <nav className="flex flex-1 flex-col">
         <ul role="list" className="flex flex-1 flex-col gap-y-7">
           <li>
-            <ul role="list" className="-mx-2 space-y-1">
+            <ul role="list" className="-mx-2 space-y-2">
               {navigation.map((item) => {
                 const isActive = pathname === item.href;
                 return (
@@ -114,24 +120,44 @@ function SidebarContent({ pathname }: { pathname: string }) {
                     <Link
                       href={item.href}
                       className={cn(
-                        "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors",
+                        "group flex gap-x-3 rounded-xl p-3 text-sm leading-6 font-medium transition-all duration-200",
                         isActive
-                          ? "bg-blue-600 text-white"
-                          : "text-gray-300 hover:text-white hover:bg-gray-800"
+                          ? "bg-spacius-green text-white shadow-lg shadow-green-500/25"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
                       )}
                     >
                       <item.icon
                         className={cn(
-                          "h-6 w-6 shrink-0",
-                          isActive ? "text-white" : "text-gray-400 group-hover:text-white"
+                          "h-5 w-5 shrink-0 transition-colors",
+                          isActive 
+                            ? "text-white" 
+                            : "text-muted-foreground group-hover:text-spacius-green"
                         )}
                       />
-                      {item.name}
+                      <span className={isActive ? 'font-semibold' : ''}>
+                        {item.name}
+                      </span>
+                      {isActive && (
+                        <div className="ml-auto h-2 w-2 rounded-full bg-white/30" />
+                      )}
                     </Link>
                   </li>
                 );
               })}
             </ul>
+          </li>
+
+          {/* Estado de conexión */}
+          <li className="mt-auto">
+            <div className="rounded-xl bg-spacius-green/10 p-4 border border-spacius-green/20">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="h-2 w-2 rounded-full bg-spacius-green animate-pulse" />
+                <span className="text-sm font-medium text-spacius-green">Firebase Conectado</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Datos en tiempo real activos
+              </p>
+            </div>
           </li>
         </ul>
       </nav>
