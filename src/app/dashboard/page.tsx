@@ -76,7 +76,7 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="space-y-8 p-6 min-h-screen bg-gradient-to-br from-background via-background to-slate-950">
+    <div className="space-y-8 p-6 min-h-screen bg-gradient-to-br from-background via-slate-50 to-green-50">
       <div className="flex justify-between items-center">
         <Header 
           title="Dashboard" 
@@ -86,7 +86,7 @@ export default function DashboardPage() {
           onClick={loadDashboardData} 
           disabled={loading} 
           variant="outline"
-          className="flex items-center gap-2 hover:bg-spacius-green hover:text-white transition-colors"
+          className="flex items-center gap-2 hover:bg-spacius-green hover:text-white transition-colors border-spacius-green text-spacius-green"
         >
           <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           {loading ? 'Cargando...' : 'Actualizar Datos'}
@@ -97,19 +97,19 @@ export default function DashboardPage() {
       <div className="grid gap-6 md:grid-cols-4">
         <FirebaseStatus className="md:col-span-1" />
         <div className="md:col-span-3">
-          <Card className={`relative overflow-hidden ${usingMockData ? 'border-l-4 border-l-yellow-500 bg-gradient-to-r from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20' : 'border-l-4 border-l-spacius-green bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20'}`}>
+          <Card className={`relative overflow-hidden shadow-md ${usingMockData ? 'border-l-4 border-l-yellow-500 bg-gradient-to-r from-yellow-50 to-yellow-100' : 'border-l-4 border-l-spacius-green bg-gradient-to-r from-green-50 to-green-100'}`}>
             <CardHeader className="pb-3">
-              <CardTitle className={`text-sm font-medium flex items-center gap-2 ${usingMockData ? 'text-yellow-700 dark:text-yellow-400' : 'text-green-700 dark:text-green-400'}`}>
+              <CardTitle className={`text-sm font-medium flex items-center gap-2 ${usingMockData ? 'text-yellow-700' : 'text-green-700'}`}>
                 {usingMockData ? '⚠️ Datos de Ejemplo' : '✅ Datos en Tiempo Real'}
               </CardTitle>
-              <CardDescription className="text-xs">
+              <CardDescription className="text-xs text-gray-600">
                 {usingMockData 
                   ? 'Para ver datos reales, configura las credenciales de Firebase' 
                   : 'Mostrando estadísticas actualizadas desde Firebase'
                 }
               </CardDescription>
             </CardHeader>
-            <CardContent className="text-xs text-muted-foreground">
+            <CardContent className="text-xs text-gray-500">
               <p>
                 {usingMockData 
                   ? 'Actualmente se muestran datos de ejemplo. Una vez configurado Firebase, este dashboard mostrará estadísticas en tiempo real.'
@@ -124,68 +124,68 @@ export default function DashboardPage() {
 
       {/* Métricas principales */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="relative overflow-hidden border-l-4 border-l-spacius-green bg-gradient-to-br from-card to-card/50 hover:shadow-lg transition-all duration-300">
+        <Card className="relative overflow-hidden border-l-4 border-l-spacius-green bg-gradient-to-br from-white to-green-50 hover:shadow-xl transition-all duration-300 shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-gray-600">
               Total Usuarios
             </CardTitle>
             <Users className="h-5 w-5 text-spacius-green" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-foreground">{stats.totalUsuarios}</div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <div className="text-3xl font-bold text-gray-900">{stats.totalUsuarios}</div>
+            <p className="text-xs text-gray-500 mt-1">
               Usuarios registrados en la plataforma
             </p>
           </CardContent>
-          <div className="absolute top-0 right-0 w-20 h-20 bg-spacius-green/5 rounded-full -translate-y-10 translate-x-10" />
+          <div className="absolute top-0 right-0 w-20 h-20 bg-spacius-green/10 rounded-full -translate-y-10 translate-x-10" />
         </Card>
 
-        <Card className="relative overflow-hidden border-l-4 border-l-spacius-green-light bg-gradient-to-br from-card to-card/50 hover:shadow-lg transition-all duration-300">
+        <Card className="relative overflow-hidden border-l-4 border-l-spacius-green-light bg-gradient-to-br from-white to-emerald-50 hover:shadow-xl transition-all duration-300 shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-gray-600">
               Total Lugares
             </CardTitle>
             <MapPin className="h-5 w-5 text-spacius-green-light" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-foreground">{stats.totalLugares}</div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <div className="text-3xl font-bold text-gray-900">{stats.totalLugares}</div>
+            <p className="text-xs text-gray-500 mt-1">
               Espacios disponibles
             </p>
           </CardContent>
-          <div className="absolute top-0 right-0 w-20 h-20 bg-spacius-green-light/5 rounded-full -translate-y-10 translate-x-10" />
+          <div className="absolute top-0 right-0 w-20 h-20 bg-spacius-green-light/10 rounded-full -translate-y-10 translate-x-10" />
         </Card>
 
-        <Card className="relative overflow-hidden border-l-4 border-l-emerald-500 bg-gradient-to-br from-card to-card/50 hover:shadow-lg transition-all duration-300">
+        <Card className="relative overflow-hidden border-l-4 border-l-emerald-500 bg-gradient-to-br from-white to-emerald-50 hover:shadow-xl transition-all duration-300 shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-gray-600">
               Reservas Activas
             </CardTitle>
             <Calendar className="h-5 w-5 text-emerald-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-foreground">{stats.reservasActivas}</div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <div className="text-3xl font-bold text-gray-900">{stats.reservasActivas}</div>
+            <p className="text-xs text-gray-500 mt-1">
               En curso actualmente
             </p>
           </CardContent>
-          <div className="absolute top-0 right-0 w-20 h-20 bg-emerald-500/5 rounded-full -translate-y-10 translate-x-10" />
+          <div className="absolute top-0 right-0 w-20 h-20 bg-emerald-500/10 rounded-full -translate-y-10 translate-x-10" />
         </Card>
 
-        <Card className="relative overflow-hidden border-l-4 border-l-green-600 bg-gradient-to-br from-card to-card/50 hover:shadow-lg transition-all duration-300">
+        <Card className="relative overflow-hidden border-l-4 border-l-green-600 bg-gradient-to-br from-white to-green-50 hover:shadow-xl transition-all duration-300 shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-gray-600">
               Reservas del Mes
             </CardTitle>
             <TrendingUp className="h-5 w-5 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-foreground">{stats.reservasMes}</div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <div className="text-3xl font-bold text-gray-900">{stats.reservasMes}</div>
+            <p className="text-xs text-gray-500 mt-1">
               Total este mes
             </p>
           </CardContent>
-          <div className="absolute top-0 right-0 w-20 h-20 bg-green-600/5 rounded-full -translate-y-10 translate-x-10" />
+          <div className="absolute top-0 right-0 w-20 h-20 bg-green-600/10 rounded-full -translate-y-10 translate-x-10" />
         </Card>
       </div>
 

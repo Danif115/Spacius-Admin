@@ -27,11 +27,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className="dark">
+    <html lang="es" className="">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground font-sans`}
       >
-        <div className="relative min-h-screen bg-gradient-to-br from-background via-background to-slate-950">
+        <div className="relative min-h-screen bg-gradient-to-br from-background via-slate-50 to-green-50">
           {children}
         </div>
       </body>
