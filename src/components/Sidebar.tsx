@@ -10,7 +10,8 @@ import {
   Users, 
   Settings,
   Menu,
-  X
+  X,
+  Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -55,13 +56,13 @@ export default function Sidebar() {
         sidebarOpen ? "block" : "hidden"
       )}>
         <div className="fixed inset-0 bg-black bg-opacity-75" onClick={() => setSidebarOpen(false)} />
-        <div className="relative flex w-full max-w-xs flex-1 flex-col bg-gray-900 dark:bg-gray-900">
+        <div className="relative flex w-full max-w-xs flex-1 flex-col bg-white border-r border-gray-200 shadow-sm">
           <div className="absolute top-0 right-0 -mr-12 pt-2">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setSidebarOpen(false)}
-              className="text-white hover:bg-gray-700"
+              className="text-gray-600 hover:bg-gray-100"
             >
               <X className="h-6 w-6" />
             </Button>
@@ -76,7 +77,7 @@ export default function Sidebar() {
           variant="ghost"
           size="icon"
           onClick={() => setSidebarOpen(true)}
-          className="m-4 text-white hover:bg-gray-800"
+          className="m-4 text-gray-600 hover:bg-green-50"
         >
           <Menu className="h-6 w-6" />
         </Button>
@@ -84,7 +85,7 @@ export default function Sidebar() {
 
       {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-        <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-700 bg-gray-900 dark:bg-gray-900 px-6">
+        <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 shadow-sm">
           <SidebarContent pathname={pathname} />
         </div>
       </div>
@@ -95,18 +96,23 @@ export default function Sidebar() {
 function SidebarContent({ pathname }: { pathname: string }) {
   return (
     <>
+      {/* Logo y título con gradiente verde */}
       <div className="flex h-16 shrink-0 items-center">
         <div className="flex items-center space-x-3">
-          <div className="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">S</span>
+          <div className="h-10 w-10 bg-spacius-gradient rounded-xl flex items-center justify-center shadow-lg shadow-green-500/25">
+            <Sparkles className="text-white h-6 w-6" />
           </div>
-          <h1 className="text-xl font-bold text-white">Spacius Admin</h1>
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">Spacius Admin</h1>
+            <p className="text-xs text-gray-600">Panel de Control</p>
+          </div>
         </div>
       </div>
+
       <nav className="flex flex-1 flex-col">
         <ul role="list" className="flex flex-1 flex-col gap-y-7">
           <li>
-            <ul role="list" className="-mx-2 space-y-1">
+            <ul role="list" className="-mx-2 space-y-2">
               {navigation.map((item) => {
                 const isActive = pathname === item.href;
                 return (
@@ -114,24 +120,44 @@ function SidebarContent({ pathname }: { pathname: string }) {
                     <Link
                       href={item.href}
                       className={cn(
-                        "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors",
+                        "group flex gap-x-3 rounded-xl p-3 text-sm leading-6 font-medium transition-all duration-200",
                         isActive
-                          ? "bg-blue-600 text-white"
-                          : "text-gray-300 hover:text-white hover:bg-gray-800"
+                          ? "bg-spacius-green text-white shadow-lg shadow-green-500/25"
+                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                       )}
                     >
                       <item.icon
                         className={cn(
-                          "h-6 w-6 shrink-0",
-                          isActive ? "text-white" : "text-gray-400 group-hover:text-white"
+                          "h-5 w-5 shrink-0 transition-colors",
+                          isActive 
+                            ? "text-white" 
+                            : "text-gray-500 group-hover:text-spacius-green"
                         )}
                       />
-                      {item.name}
+                      <span className={isActive ? 'font-semibold' : ''}>
+                        {item.name}
+                      </span>
+                      {isActive && (
+                        <div className="ml-auto h-2 w-2 rounded-full bg-white/30" />
+                      )}
                     </Link>
                   </li>
                 );
               })}
             </ul>
+          </li>
+
+          {/* Estado de conexión */}
+          <li className="mt-auto">
+            <div className="rounded-xl bg-green-50 p-4 border border-green-200">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="h-2 w-2 rounded-full bg-spacius-green animate-pulse" />
+                <span className="text-sm font-medium text-green-700">Firebase Conectado</span>
+              </div>
+              <p className="text-xs text-gray-600">
+                Datos en tiempo real activos
+              </p>
+            </div>
           </li>
         </ul>
       </nav>
