@@ -196,7 +196,7 @@ export default function LugaresPage() {
   };
 
   return (
-    <div className="space-y-6 p-6 bg-black min-h-screen">
+    <div className="space-y-6 p-6 bg-gradient-to-br from-background via-slate-50 to-green-50 min-h-screen">
       <div className="flex justify-between items-center">
         <Header 
           title="Gestión de Lugares" 
